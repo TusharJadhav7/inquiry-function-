@@ -23,7 +23,7 @@ public class StudentRegistrationMapper {
         studentRegistrationEntity.setParentMobNumber(studentRegistrationDataDto.getParentMobNumber());
         studentRegistrationEntity.setEmail(studentRegistrationDataDto.getEmail());
         studentRegistrationEntity.setTotalFees(studentRegistrationDataDto.getTotalFees());
-        studentRegistrationEntity.setPaidFees(studentRegistrationEntity.getPaidFees());
+        studentRegistrationEntity.setPaidFees(studentRegistrationDataDto.getPaidFees());
         studentRegistrationEntity.setRemainingFees(studentRegistrationDataDto.getRemainingFees());
         studentRegistrationEntity.setAdharCardNumber(studentRegistrationDataDto.getAdharCardNumber());
         return studentRegistrationEntity;
@@ -32,6 +32,7 @@ public class StudentRegistrationMapper {
     public static StudentRegistrationDataDto convertToDto(StudentRegistrationEntity studentRegistrationEntity){
 
         StudentRegistrationDataDto studentRegistrationDataDto =new StudentRegistrationDataDto();
+        studentRegistrationDataDto.setRegId(studentRegistrationEntity.getRegId());
         studentRegistrationDataDto.setFirstName(studentRegistrationEntity.getFirstName());
         studentRegistrationDataDto.setMiddleName(studentRegistrationEntity.getMiddleName());
         studentRegistrationDataDto.setLastName(studentRegistrationEntity.getLastName());
@@ -44,6 +45,7 @@ public class StudentRegistrationMapper {
         studentRegistrationDataDto.setAddress(studentRegistrationEntity.getAddress());
         studentRegistrationDataDto.setSchoolCollegeName(studentRegistrationEntity.getSchoolCollegeName());
         studentRegistrationDataDto.setParentMobNumber(studentRegistrationEntity.getParentMobNumber());
+        studentRegistrationDataDto.setStdMobNumber(studentRegistrationEntity.getStdMobNumber());
         studentRegistrationDataDto.setEmail(studentRegistrationEntity.getEmail());
         studentRegistrationDataDto.setTotalFees(studentRegistrationEntity.getTotalFees());
         studentRegistrationDataDto.setPaidFees(studentRegistrationEntity.getPaidFees());
