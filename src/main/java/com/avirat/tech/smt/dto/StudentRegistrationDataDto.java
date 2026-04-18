@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 public class StudentRegistrationDataDto {
 
-    @JsonIgnore
+
     private String regId;
     private String firstName;
     private String middleName;

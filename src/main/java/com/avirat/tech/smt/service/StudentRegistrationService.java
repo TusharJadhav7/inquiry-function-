@@ -11,5 +11,19 @@ public interface StudentRegistrationService {
 
     public StudentRegistrationDataDto getStudentRegistration(String regId);
 
-    public Page<StudentRegistrationDataDto> searchStudentByParam(String param,int pageNumber,int pagesize);
+    public Page<StudentRegistrationDataDto> searchStudent(
+            String regId,
+            String firstName,
+            String lastName,
+            String course,
+            String standard,
+            String email,
+            String adhar,
+            int pageNumber,
+            int pageSize
+    );
+
+    public StudentRegistrationDataDto updateStudent(String regId, StudentRegistrationDataDto dto);
+
+    public void deleteStudent(String regId);
 }
