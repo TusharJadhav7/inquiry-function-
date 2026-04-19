@@ -84,4 +84,14 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
         catalogIdRecordRepo.save(catalogIdRecordEntity);
 
     }
+
+    @Override
+    public void deleteCatalog(String catalogId) {
+
+        CourseCatalogEntity catalog= courseCatalogRepo.findByCatlogId(catalogId)
+                .orElseThrow(() -> new RuntimeException("Student not found" + catalogId));
+        courseCatalogRepo.delete(catalog);
+    }
+
+
 }

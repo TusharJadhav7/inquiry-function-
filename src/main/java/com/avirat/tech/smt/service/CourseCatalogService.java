@@ -19,4 +19,8 @@ public interface CourseCatalogService {
     public List<String> getAllCourseName();
 
     public Page<CourseCatalogDto> searchCatalogByParam(String param, int pageNumber, int pagesize);
+
+   public  void deleteCatalog(String catalogId);
+
+
 }
