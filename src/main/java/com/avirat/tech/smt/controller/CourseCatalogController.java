@@ -30,8 +30,14 @@ public class CourseCatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CourseCatalogDto>> getCourseCatalog(@PathVariable(name="pageNumber",required = false) int pageNumber,@PathVariable(name = "pageSize",required = false) int pageSize){
+    public ResponseEntity<Page<CourseCatalogDto>> getCourseCatalog(@PathVariable(name="pageNumber",required = false) Integer pageNumber,@PathVariable(name = "pageSize",required = false) Integer pageSize){
         Page<CourseCatalogDto> courseCatLog = courseCatalogService.getCourseCatLog(pageNumber, pageSize);
         return ResponseEntity.ok(courseCatLog);
+    }
+
+    @DeleteMapping("/delete-student/{catalogId}")
+    public ResponseEntity<String> deleteCatalog(@PathVariable String catalogId) {
+        courseCatalogService.deleteCatalog(catalogId);
+        return ResponseEntity.ok("Catalog with ID " + catalogId + " deleted successfully.");
     }
 }
