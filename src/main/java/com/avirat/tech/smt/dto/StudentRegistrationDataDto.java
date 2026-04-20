@@ -71,4 +71,6 @@ public class StudentRegistrationDataDto {
 
     @Pattern(regexp = "^$|^[0-9]{12}$", message = "Aadhaar number must be exactly 12 digits")
     private String adharCardNumber;
+
+
 }

@@ -1,6 +1,7 @@
 package com.avirat.tech.smt.mapper;
 
 import com.avirat.tech.smt.dto.StudentRegistrationDataDto;
+import com.avirat.tech.smt.dto.StudentRegistrationDataResponseDto;
 import com.avirat.tech.smt.entity.StudentRegistrationEntity;
 
 public class StudentRegistrationMapper {
@@ -63,6 +64,15 @@ public class StudentRegistrationMapper {
         dto.setPaidFees(entity.getPaidFees());
         dto.setRemainingFees(entity.getRemainingFees());
         dto.setAdharCardNumber(entity.getAdharCardNumber());
+        return dto;
+    }
+    public static StudentRegistrationDataResponseDto convertToResponseDto(StudentRegistrationEntity entity) {
+        StudentRegistrationDataResponseDto dto = new StudentRegistrationDataResponseDto();
+        dto.setRegId(entity.getRegId());
+        dto.setCourse(entity.getCourse());
+        dto.setTotalFees(entity.getTotalFees());
+        dto.setPaidFees(entity.getPaidFees());
+        dto.setFeesDto(FeesMapper.convertToDto(entity.getFeesEntity()));
         return dto;
     }
 }

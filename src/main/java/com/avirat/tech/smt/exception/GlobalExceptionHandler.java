@@ -1,5 +1,6 @@
 package com.avirat.tech.smt.exception;
 
+import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(RuntimeException.class)
+   /* @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
         log.error("RuntimeException: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
-
+*/
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         log.error("Validation error: {}", ex.getMessage());
@@ -54,4 +55,15 @@ public class GlobalExceptionHandler {
         body.put("message", "An unexpected error occurred. Please try again later.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(DataNotFoundException ex) {
+        log.error("DataNotFoundException: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", " Data Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
 }

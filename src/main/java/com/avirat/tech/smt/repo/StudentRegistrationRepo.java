@@ -30,4 +30,24 @@ AND (:adhar IS NULL OR s.adharCardNumber = :adhar)
             @Param("email") String email,
             @Param("adhar") String adhar,
             Pageable pageable);
+
+
+
+
+@Query("""
+SELECT s FROM StudentRegistrationEntity s
+WHERE (:regId IS NULL OR s.regId = :regId)
+AND (:firstName IS NULL OR LOWER(s.firstName) LIKE LOWER(CONCAT('%', :firstName, '%')))
+AND  (:middleName IS NULL OR LOWER(s.middleName) LIKE LOWER(CONCAT('%', :middleName, '%')))
+AND (:lastName IS NULL OR LOWER(s.lastName) LIKE LOWER(CONCAT('%', :lastName, '%')))
+AND (:academicYear IS NULL or s.academicYear LIKE CONCAT('%', :academicYear, '%') )""")
+Page<StudentRegistrationEntity> searchStudentByNameAndAcademicYear(
+        @Param("regId") String regId,
+        @Param("firstName") String firstName,
+        @Param("middleName") String middleName,
+        @Param("lastName") String lastName,
+        @Param("academicYear") String academicYear,
+        Pageable pageable);
+
 }
+

@@ -1,11 +1,18 @@
 package com.avirat.tech.smt.service.impl;
 
+import com.avirat.tech.smt.constant.FeesStatusConstant;
 import com.avirat.tech.smt.dto.StudentRegistrationDataDto;
+import com.avirat.tech.smt.entity.CourseCatalogEntity;
+import com.avirat.tech.smt.entity.FeesEntity;
 import com.avirat.tech.smt.entity.RegistrationIdRecordEntity;
 import com.avirat.tech.smt.entity.StudentRegistrationEntity;
+import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
 import com.avirat.tech.smt.mapper.StudentRegistrationMapper;
+import com.avirat.tech.smt.repo.CourseCatalogRepo;
+import com.avirat.tech.smt.repo.FeesRepo;
 import com.avirat.tech.smt.repo.RegistrationIdRecordRepo;
 import com.avirat.tech.smt.repo.StudentRegistrationRepo;
+import com.avirat.tech.smt.service.InstallmentService;
 import com.avirat.tech.smt.service.StudentRegistrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +35,31 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
     @Autowired
     private RegistrationIdRecordRepo registrationIdRecordRepo;
 
+    @Autowired
+    private FeesRepo feesRepo;
+
+    @Autowired
+    private CourseCatalogRepo courseCatalogRepo;
+
+    @Autowired
+    private InstallmentService installmentService;
+
     @Override
     public StudentRegistrationDataDto saveStudentRegistration(StudentRegistrationDataDto dto) {
         log.info("Registering new student: {} {}", dto.getFirstName(), dto.getLastName());
-        StudentRegistrationEntity entity = StudentRegistrationMapper.convertToEntity(dto);
+        StudentRegistrationEntity studentRegistrationEntity = StudentRegistrationMapper.convertToEntity(dto);
         String regId = getIncrementedRegId();
-        entity.setRegId(regId);
-        StudentRegistrationEntity saved = studentRegistrationRepo.save(entity);
+        studentRegistrationEntity.setRegId(regId);
+        CourseCatalogEntity courseCatalogEntity = courseCatalogRepo.findById(studentRegistrationEntity.getCourse()).orElseThrow(() -> new DataNotFoundException());
+        FeesEntity feesEntity = FeesEntity.builder()
+                .totalFees(courseCatalogEntity.getTotalFees())
+                .pending(courseCatalogEntity.getTotalFees())
+                .paidFees(0L)
+                .feesStatus(FeesStatusConstant.PENDING.toString()).build();
+        studentRegistrationEntity.setFeesEntity(feesEntity);
+        StudentRegistrationEntity saved = studentRegistrationRepo.save(studentRegistrationEntity);
         updateRegId(regId);
+        installmentService.installmentGenerator(saved.getFeesEntity(),courseCatalogEntity);
         log.info("Student registered successfully with ID: {}", regId);
         return StudentRegistrationMapper.convertToDto(saved);
     }
