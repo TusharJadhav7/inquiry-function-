@@ -3,23 +3,24 @@ package com.avirat.tech.smt.service.impl;
 import com.avirat.tech.smt.dto.CourseCatalogDto;
 import com.avirat.tech.smt.entity.CatalogIdRecordEntity;
 import com.avirat.tech.smt.entity.CourseCatalogEntity;
-import com.avirat.tech.smt.entity.RegistrationIdRecordEntity;
-import com.avirat.tech.smt.entity.StudentRegistrationEntity;
 import com.avirat.tech.smt.mapper.CourseCatalogMapper;
-import com.avirat.tech.smt.mapper.StudentRegistrationMapper;
 import com.avirat.tech.smt.repo.CatalogIdRecordRepo;
 import com.avirat.tech.smt.repo.CourseCatalogRepo;
 import com.avirat.tech.smt.service.CourseCatalogService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
+
 @Service
 public class CourseCatalogServiceImpl implements CourseCatalogService {
+
+    private static final Logger log = LoggerFactory.getLogger(CourseCatalogServiceImpl.class);
 
     @Autowired
     private CourseCatalogRepo courseCatalogRepo;
@@ -29,69 +30,82 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
 
     @Override
     public List<CourseCatalogDto> getCatalog() {
-        List<CourseCatalogDto> listOfCourseCatalog = courseCatalogRepo.findAll().stream().map(courseCatalogEntity -> CourseCatalogMapper.convertToDto(courseCatalogEntity)).toList();
-        return listOfCourseCatalog;
+        log.info("Fetching all courses");
+        return courseCatalogRepo.findAll().stream()
+                .map(CourseCatalogMapper::convertToDto)
+                .toList();
     }
 
     @Override
     public CourseCatalogDto saveNewCatalog(CourseCatalogDto courseCatalogDto) {
-        CourseCatalogEntity courseCatalogEntity = CourseCatalogMapper.converToEntity(courseCatalogDto);
-        String maxCatlogId=getIncrementedCatId();
-        courseCatalogEntity.setCatlogId(maxCatlogId);
-        CourseCatalogEntity saveCourseCatalog = courseCatalogRepo.save(courseCatalogEntity);
-        updateCatId(maxCatlogId);
-        return CourseCatalogMapper.convertToDto(saveCourseCatalog);
+        log.info("Saving new course: {}", courseCatalogDto.getCourseName());
+        CourseCatalogEntity entity = CourseCatalogMapper.converToEntity(courseCatalogDto);
+        String catId = getIncrementedCatId();
+        entity.setCatlogId(catId);
+        CourseCatalogEntity saved = courseCatalogRepo.save(entity);
+        updateCatId(catId);
+        log.info("Course saved with ID: {}", catId);
+        return CourseCatalogMapper.convertToDto(saved);
     }
 
     @Override
     public List<String> getAllCourseName() {
-        return courseCatalogRepo.findAll().stream().map(courseCatalogEntity -> courseCatalogEntity.getCourseName()).sorted(Comparable::compareTo).toList();
+        log.info("Fetching all course names");
+        return courseCatalogRepo.findAll().stream()
+                .map(CourseCatalogEntity::getCourseName)
+                .sorted(Comparable::compareTo)
+                .toList();
     }
 
     @Override
     public CourseCatalogDto saveCourseCatalogDto(CourseCatalogDto courseCatalogDto) {
-        CourseCatalogEntity courseCatalogEntity = CourseCatalogMapper.converToEntity(courseCatalogDto);
-        CourseCatalogEntity savedCourseCatalog = courseCatalogRepo.save(courseCatalogEntity);
-        return CourseCatalogMapper.convertToDto(savedCourseCatalog);
+        log.info("Updating course: {}", courseCatalogDto.getCatlogId());
+        CourseCatalogEntity entity = CourseCatalogMapper.converToEntity(courseCatalogDto);
+        CourseCatalogEntity saved = courseCatalogRepo.save(entity);
+        return CourseCatalogMapper.convertToDto(saved);
     }
 
     @Override
     public Page<CourseCatalogDto> getCourseCatLog(int pageNumber, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.Direction.ASC);
-        Page<CourseCatalogEntity> courseCatalogEntityPage = courseCatalogRepo.findAll(pageRequest);
-        return courseCatalogEntityPage.map(courseCatalogEntity -> CourseCatalogMapper.convertToDto(courseCatalogEntity));
+        log.info("Fetching courses page {} (size {})", pageNumber, pageSize);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, "catlogId"));
+        Page<CourseCatalogEntity> page = courseCatalogRepo.findAll(pageRequest);
+        return page.map(CourseCatalogMapper::convertToDto);
     }
-
 
     @Override
     public Page<CourseCatalogDto> searchCatalogByParam(String param, int pageNumber, int pagesize) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pagesize, Sort.Direction.ASC);
-        Page<CourseCatalogEntity> courseCatalogEntityPage = courseCatalogRepo.findByParam(param, pageRequest);
-        return courseCatalogEntityPage.map(courseCatalogEntity -> CourseCatalogMapper.convertToDto(courseCatalogEntity));
-
-    }
-
-    private String getIncrementedCatId(){
-
-        Long maxRecordId=catalogIdRecordRepo.findMaxRecordId().orElse(Long.parseLong("001"));
-        return "Cat-"+maxRecordId.toString();
-    }
-    private void updateCatId(String regId){
-        String[] regIdArray=regId.split("-");
-        CatalogIdRecordEntity catalogIdRecordEntity =CatalogIdRecordEntity.builder()
-                .catalogId(Long.valueOf(regIdArray[1]))
-                .build();
-        catalogIdRecordRepo.save(catalogIdRecordEntity);
-
+        log.info("Searching catalog with param: {}", param);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pagesize, Sort.by(Sort.Direction.ASC, "catlogId"));
+        Page<CourseCatalogEntity> page = courseCatalogRepo.findByParam(param, pageRequest);
+        return page.map(CourseCatalogMapper::convertToDto);
     }
 
     @Override
     public void deleteCatalog(String catalogId) {
-
-        CourseCatalogEntity catalog= courseCatalogRepo.findByCatlogId(catalogId)
-                .orElseThrow(() -> new RuntimeException("Student not found" + catalogId));
-        courseCatalogRepo.delete(catalog);
+        log.info("Deleting catalog: {}", catalogId);
+        CourseCatalogEntity entity = courseCatalogRepo.findById(catalogId)
+                .orElseThrow(() -> {
+                    log.warn("Delete failed — catalog not found: {}", catalogId);
+                    return new RuntimeException("Catalog not found with ID: " + catalogId);
+                });
+        courseCatalogRepo.delete(entity);
+        log.info("Catalog {} deleted successfully", catalogId);
     }
 
+    // ============ HELPERS ============
 
+    private String getIncrementedCatId() {
+        Long maxRecordId = catalogIdRecordRepo.findMaxRecordId().orElse(0L);
+        maxRecordId = maxRecordId + 1;
+        return "Cat-" + maxRecordId.toString();
+    }
+
+    private void updateCatId(String catId) {
+        String[] parts = catId.split("-");
+        CatalogIdRecordEntity entity = CatalogIdRecordEntity.builder()
+                .catalogId(Long.valueOf(parts[1]))
+                .build();
+        catalogIdRecordRepo.save(entity);
+    }
 }

@@ -2,8 +2,6 @@ package com.avirat.tech.smt.dto;
 
 import lombok.*;
 
-import java.time.Duration;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,12 +13,11 @@ public class CourseCatalogDto {
 
     private String courseName;
 
-    private Duration duration;
+    private String duration;
 
     private Long totalFees;
 
     private Integer installments;
 
     private String description;
-
 }
