@@ -5,54 +5,64 @@ import com.avirat.tech.smt.entity.StudentRegistrationEntity;
 
 public class StudentRegistrationMapper {
 
-    public static StudentRegistrationEntity convertToEntity(StudentRegistrationDataDto studentRegistrationDataDto){
-
-        StudentRegistrationEntity studentRegistrationEntity =new StudentRegistrationEntity();
-        studentRegistrationEntity.setFirstName(studentRegistrationDataDto.getFirstName());
-        studentRegistrationEntity.setMiddleName(studentRegistrationDataDto.getMiddleName());
-        studentRegistrationEntity.setLastName(studentRegistrationDataDto.getLastName());
-        studentRegistrationEntity.setMotherName(studentRegistrationDataDto.getMotherName());
-        studentRegistrationEntity.setDateOfBirth(studentRegistrationDataDto.getDateOfBirth());
-        studentRegistrationEntity.setGender(studentRegistrationDataDto.getGender());
-        studentRegistrationEntity.setCourse(studentRegistrationDataDto.getCourse());
-        studentRegistrationEntity.setStandard(studentRegistrationDataDto.getStandard());
-        studentRegistrationEntity.setAdmissionDate(studentRegistrationDataDto.getAdmissionDate());
-        studentRegistrationEntity.setAddress(studentRegistrationDataDto.getAddress());
-        studentRegistrationEntity.setSchoolCollegeName(studentRegistrationDataDto.getSchoolCollegeName());
-        studentRegistrationEntity.setStdMobNumber(studentRegistrationDataDto.getStdMobNumber());
-        studentRegistrationEntity.setParentMobNumber(studentRegistrationDataDto.getParentMobNumber());
-        studentRegistrationEntity.setEmail(studentRegistrationDataDto.getEmail());
-        studentRegistrationEntity.setTotalFees(studentRegistrationDataDto.getTotalFees());
-        studentRegistrationEntity.setPaidFees(studentRegistrationDataDto.getPaidFees());
-        studentRegistrationEntity.setRemainingFees(studentRegistrationDataDto.getRemainingFees());
-        studentRegistrationEntity.setAdharCardNumber(studentRegistrationDataDto.getAdharCardNumber());
-        return studentRegistrationEntity;
-
-    }
-    public static StudentRegistrationDataDto convertToDto(StudentRegistrationEntity studentRegistrationEntity){
-
-        StudentRegistrationDataDto studentRegistrationDataDto =new StudentRegistrationDataDto();
-        studentRegistrationDataDto.setRegId(studentRegistrationEntity.getRegId());
-        studentRegistrationDataDto.setFirstName(studentRegistrationEntity.getFirstName());
-        studentRegistrationDataDto.setMiddleName(studentRegistrationEntity.getMiddleName());
-        studentRegistrationDataDto.setLastName(studentRegistrationEntity.getLastName());
-        studentRegistrationDataDto.setMotherName(studentRegistrationEntity.getMotherName());
-        studentRegistrationDataDto.setDateOfBirth(studentRegistrationEntity.getDateOfBirth());
-        studentRegistrationDataDto.setGender(studentRegistrationEntity.getGender());
-        studentRegistrationDataDto.setCourse(studentRegistrationEntity.getCourse());
-        studentRegistrationDataDto.setStandard(studentRegistrationEntity.getStandard());
-        studentRegistrationDataDto.setAdmissionDate(studentRegistrationEntity.getAdmissionDate());
-        studentRegistrationDataDto.setAddress(studentRegistrationEntity.getAddress());
-        studentRegistrationDataDto.setSchoolCollegeName(studentRegistrationEntity.getSchoolCollegeName());
-        studentRegistrationDataDto.setParentMobNumber(studentRegistrationEntity.getParentMobNumber());
-        studentRegistrationDataDto.setStdMobNumber(studentRegistrationEntity.getStdMobNumber());
-        studentRegistrationDataDto.setEmail(studentRegistrationEntity.getEmail());
-        studentRegistrationDataDto.setTotalFees(studentRegistrationEntity.getTotalFees());
-        studentRegistrationDataDto.setPaidFees(studentRegistrationEntity.getPaidFees());
-        studentRegistrationDataDto.setRemainingFees(studentRegistrationEntity.getRemainingFees());
-        studentRegistrationDataDto.setAdharCardNumber(studentRegistrationEntity.getAdharCardNumber());
-        return studentRegistrationDataDto;
+    public static StudentRegistrationEntity convertToEntity(StudentRegistrationDataDto dto) {
+        StudentRegistrationEntity entity = new StudentRegistrationEntity();
+        entity.setFirstName(dto.getFirstName());
+        entity.setMiddleName(dto.getMiddleName());
+        entity.setLastName(dto.getLastName());
+        entity.setMotherName(dto.getMotherName());
+        entity.setGuardianName(dto.getGuardianName());
+        entity.setDateOfBirth(dto.getDateOfBirth());
+        entity.setGender(dto.getGender());
+        entity.setCourse(dto.getCourse());
+        entity.setStandard(dto.getStandard());
+        entity.setCourseDuration(dto.getCourseDuration());
+        entity.setAcademicYear(dto.getAcademicYear());
+        entity.setAcademicGroup(dto.getAcademicGroup());
+        entity.setAdmissionDate(dto.getAdmissionDate());
+        entity.setSchoolCollegeName(dto.getSchoolCollegeName());
+        entity.setAddress(dto.getAddress());
+        entity.setParentAddress(dto.getParentAddress());
+        entity.setStdMobNumber(dto.getStdMobNumber());
+        entity.setParentMobNumber(dto.getParentMobNumber());
+        entity.setGuardianMobileNumber(dto.getGuardianMobileNumber());
+        entity.setEmail(dto.getEmail());
+        entity.setParentEmail(dto.getParentEmail());
+        entity.setTotalFees(dto.getTotalFees());
+        entity.setPaidFees(dto.getPaidFees());
+        entity.setRemainingFees(dto.getRemainingFees());
+        entity.setAdharCardNumber(dto.getAdharCardNumber());
+        return entity;
     }
 
-
+    public static StudentRegistrationDataDto convertToDto(StudentRegistrationEntity entity) {
+        StudentRegistrationDataDto dto = new StudentRegistrationDataDto();
+        dto.setRegId(entity.getRegId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setMiddleName(entity.getMiddleName());
+        dto.setLastName(entity.getLastName());
+        dto.setMotherName(entity.getMotherName());
+        dto.setGuardianName(entity.getGuardianName());
+        dto.setDateOfBirth(entity.getDateOfBirth());
+        dto.setGender(entity.getGender());
+        dto.setCourse(entity.getCourse());
+        dto.setStandard(entity.getStandard());
+        dto.setCourseDuration(entity.getCourseDuration());
+        dto.setAcademicYear(entity.getAcademicYear());
+        dto.setAcademicGroup(entity.getAcademicGroup());
+        dto.setAdmissionDate(entity.getAdmissionDate());
+        dto.setSchoolCollegeName(entity.getSchoolCollegeName());
+        dto.setAddress(entity.getAddress());
+        dto.setParentAddress(entity.getParentAddress());
+        dto.setStdMobNumber(entity.getStdMobNumber());
+        dto.setParentMobNumber(entity.getParentMobNumber());
+        dto.setGuardianMobileNumber(entity.getGuardianMobileNumber());
+        dto.setEmail(entity.getEmail());
+        dto.setParentEmail(entity.getParentEmail());
+        dto.setTotalFees(entity.getTotalFees());
+        dto.setPaidFees(entity.getPaidFees());
+        dto.setRemainingFees(entity.getRemainingFees());
+        dto.setAdharCardNumber(entity.getAdharCardNumber());
+        return dto;
+    }
 }

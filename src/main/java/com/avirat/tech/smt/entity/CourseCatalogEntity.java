@@ -1,12 +1,8 @@
 package com.avirat.tech.smt.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
-
-import java.time.Duration;
 
 @Entity
 @Getter
@@ -21,15 +17,11 @@ public class CourseCatalogEntity {
 
     private String courseName;
 
-    private Duration duration;
+    private String duration;
 
     private Long totalFees;
 
     private Integer installments;
 
     private String description;
-
-
-
-
 }

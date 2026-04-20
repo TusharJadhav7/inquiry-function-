@@ -29,6 +29,5 @@ AND (:adhar IS NULL OR s.adharCardNumber = :adhar)
             @Param("standard") String standard,
             @Param("email") String email,
             @Param("adhar") String adhar,
-            Pageable pageable
-    );
+            Pageable pageable);
 }
