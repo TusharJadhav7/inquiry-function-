@@ -30,4 +30,5 @@ public class FeesController {
         Page<StudentRegistrationDataResponseDto> results = feesService.getFees(regId, firstName,middleName, lastName,academicYear,pageNumber,pageSize);
         return ResponseEntity.ok(results);
     }
+
 }

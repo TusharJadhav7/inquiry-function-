@@ -19,7 +19,7 @@ public class FeesServiceImpl implements FeesService {
 
     @Override
     public Page<StudentRegistrationDataResponseDto> getFees(String regId, String firstName, String middleName, String lastName, String academicYear, Integer pageNumber, Integer pageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.Direction.ASC);
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC,"firstName"));
         regId = emptyToNull(regId);
         if (regId != null && !regId.toLowerCase().startsWith("reg-")) {
             regId = "Reg-" + regId;

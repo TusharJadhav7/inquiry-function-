@@ -1,6 +1,7 @@
 package com.avirat.tech.smt.exception;
 
 import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
+import com.avirat.tech.smt.exception.globalexception.InvalidTransactionReqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -65,5 +66,16 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
+    @ExceptionHandler(InvalidTransactionReqException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(InvalidTransactionReqException ex) {
+        log.error("DataNotFoundException: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", " Data Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
 
 }
