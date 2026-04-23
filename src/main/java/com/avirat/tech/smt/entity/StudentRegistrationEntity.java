@@ -1,8 +1,6 @@
 package com.avirat.tech.smt.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -46,4 +44,10 @@ public class StudentRegistrationEntity {
     private Long remainingFees;
     @Column(unique = true)
     private String adharCardNumber;
+
+    // Mapping with Fees
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "fees_id",nullable = false,unique = true)
+    private FeesEntity feesEntity;
+
 }

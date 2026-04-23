@@ -1,5 +1,7 @@
 package com.avirat.tech.smt.exception;
 
+import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
+import com.avirat.tech.smt.exception.globalexception.InvalidTransactionReqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,7 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(RuntimeException.class)
+   /* @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
         log.error("RuntimeException: {}", ex.getMessage());
         Map<String, Object> body = new HashMap<>();
@@ -27,6 +29,19 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
+*/
+   @ExceptionHandler(IllegalArgumentException.class)
+   public ResponseEntity<Map<String, Object>> handleBadRequestException(IllegalArgumentException ex) {
+       log.error("IllegalArgumentException: {}", ex.getMessage());
+
+       Map<String, Object> body = new HashMap<>();
+       body.put("timestamp", LocalDateTime.now().toString());
+       body.put("status", HttpStatus.BAD_REQUEST.value());
+       body.put("error", "Bad Request");
+       body.put("message", ex.getMessage());
+
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+   }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -44,6 +59,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDataNotFoundException(DataNotFoundException ex) {
+        log.error("DataNotFoundException: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Data Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(InvalidTransactionReqException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidTransactionReqException(InvalidTransactionReqException ex) {
+        log.error("InvalidTransactionReqException: {}", ex.getMessage());
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Invalid Transaction Request");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
@@ -54,4 +91,6 @@ public class GlobalExceptionHandler {
         body.put("message", "An unexpected error occurred. Please try again later.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
+
 }

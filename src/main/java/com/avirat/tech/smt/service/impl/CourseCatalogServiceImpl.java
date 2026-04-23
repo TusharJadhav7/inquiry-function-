@@ -3,6 +3,7 @@ package com.avirat.tech.smt.service.impl;
 import com.avirat.tech.smt.dto.CourseCatalogDto;
 import com.avirat.tech.smt.entity.CatalogIdRecordEntity;
 import com.avirat.tech.smt.entity.CourseCatalogEntity;
+import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
 import com.avirat.tech.smt.mapper.CourseCatalogMapper;
 import com.avirat.tech.smt.repo.CatalogIdRecordRepo;
 import com.avirat.tech.smt.repo.CourseCatalogRepo;
@@ -30,7 +31,7 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
 
     @Override
     public List<CourseCatalogDto> getCatalog() {
-        log.info("Fetching all courses");
+        log.info("Fetching all courses. Inside getCatalog()");
         return courseCatalogRepo.findAll().stream()
                 .map(CourseCatalogMapper::convertToDto)
                 .toList();
@@ -38,19 +39,19 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
 
     @Override
     public CourseCatalogDto saveNewCatalog(CourseCatalogDto courseCatalogDto) {
-        log.info("Saving new course: {}", courseCatalogDto.getCourseName());
+        log.info("ENTER saveNewCatalog() | courseName={}", courseCatalogDto.getCourseName());
         CourseCatalogEntity entity = CourseCatalogMapper.converToEntity(courseCatalogDto);
         String catId = getIncrementedCatId();
         entity.setCatlogId(catId);
         CourseCatalogEntity saved = courseCatalogRepo.save(entity);
         updateCatId(catId);
-        log.info("Course saved with ID: {}", catId);
+        log.info("EXIT saveNewCatalog() | catId={}", catId);
         return CourseCatalogMapper.convertToDto(saved);
     }
 
     @Override
     public List<String> getAllCourseName() {
-        log.info("Fetching all course names");
+        log.info("Fetching all course names. Inside getAllCourseName()");
         return courseCatalogRepo.findAll().stream()
                 .map(CourseCatalogEntity::getCourseName)
                 .sorted(Comparable::compareTo)
@@ -59,38 +60,50 @@ public class CourseCatalogServiceImpl implements CourseCatalogService {
 
     @Override
     public CourseCatalogDto saveCourseCatalogDto(CourseCatalogDto courseCatalogDto) {
-        log.info("Updating course: {}", courseCatalogDto.getCatlogId());
+        if (courseCatalogDto == null) {
+            throw new IllegalArgumentException("Course data cannot be null");
+        }
+        log.info("ENTER saveCourseCatalogDto() | catalogId={}", courseCatalogDto.getCatlogId());
         CourseCatalogEntity entity = CourseCatalogMapper.converToEntity(courseCatalogDto);
         CourseCatalogEntity saved = courseCatalogRepo.save(entity);
+        log.info("EXIT saveCourseCatalogDto() | catalogId={}", saved.getCatlogId());
         return CourseCatalogMapper.convertToDto(saved);
     }
 
     @Override
     public Page<CourseCatalogDto> getCourseCatLog(int pageNumber, int pageSize) {
-        log.info("Fetching courses page {} (size {})", pageNumber, pageSize);
+        log.info("ENTER getCourseCatLog() | pageNumber={} pageSize={}", pageNumber, pageSize);
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Invalid pagination values");
+        }
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, "catlogId"));
         Page<CourseCatalogEntity> page = courseCatalogRepo.findAll(pageRequest);
+        log.info("EXIT getCourseCatLog() | totalRecords={}", page.getTotalElements());
         return page.map(CourseCatalogMapper::convertToDto);
     }
 
     @Override
     public Page<CourseCatalogDto> searchCatalogByParam(String param, int pageNumber, int pagesize) {
-        log.info("Searching catalog with param: {}", param);
+        log.info("ENTER searchCatalogByParam() | param={} pageNumber={} pageSize={}", param, pageNumber, pagesize);
+        if (pageNumber < 0 || pagesize <= 0) {
+            throw new IllegalArgumentException("Invalid pagination values");
+        }
         PageRequest pageRequest = PageRequest.of(pageNumber, pagesize, Sort.by(Sort.Direction.ASC, "catlogId"));
         Page<CourseCatalogEntity> page = courseCatalogRepo.findByParam(param, pageRequest);
+        log.info("EXIT searchCatalogByParam() | totalRecords={}", page.getTotalElements());
         return page.map(CourseCatalogMapper::convertToDto);
     }
 
     @Override
     public void deleteCatalog(String catalogId) {
-        log.info("Deleting catalog: {}", catalogId);
+        log.info("ENTER deleteCatalog() | catalogId={}", catalogId);
         CourseCatalogEntity entity = courseCatalogRepo.findById(catalogId)
                 .orElseThrow(() -> {
                     log.warn("Delete failed — catalog not found: {}", catalogId);
-                    return new RuntimeException("Catalog not found with ID: " + catalogId);
+                    return new DataNotFoundException("Course not found with id: " + catalogId);
                 });
         courseCatalogRepo.delete(entity);
-        log.info("Catalog {} deleted successfully", catalogId);
+        log.info("EXIT deleteCatalog() | deletedId={}", catalogId);
     }
 
     // ============ HELPERS ============

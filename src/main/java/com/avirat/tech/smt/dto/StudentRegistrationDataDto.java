@@ -28,6 +28,8 @@ public class StudentRegistrationDataDto {
 
     private String motherName;
     private String guardianName;
+
+    @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Gender is required")
@@ -57,9 +59,11 @@ public class StudentRegistrationDataDto {
     @Pattern(regexp = "^$|^[0-9]{10}$", message = "Guardian mobile number must be exactly 10 digits")
     private String guardianMobileNumber;
 
-    @Email(message = "Invalid student email format")
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Email is mandatory")
     @Email(message = "Invalid parent email format")
     private String parentEmail;
 
@@ -71,4 +75,6 @@ public class StudentRegistrationDataDto {
 
     @Pattern(regexp = "^$|^[0-9]{12}$", message = "Aadhaar number must be exactly 12 digits")
     private String adharCardNumber;
+
+
 }

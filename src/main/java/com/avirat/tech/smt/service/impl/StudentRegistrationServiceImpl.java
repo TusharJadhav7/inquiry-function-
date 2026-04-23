@@ -1,11 +1,18 @@
 package com.avirat.tech.smt.service.impl;
 
+import com.avirat.tech.smt.constant.FeesStatusConstant;
 import com.avirat.tech.smt.dto.StudentRegistrationDataDto;
+import com.avirat.tech.smt.entity.CourseCatalogEntity;
+import com.avirat.tech.smt.entity.FeesEntity;
 import com.avirat.tech.smt.entity.RegistrationIdRecordEntity;
 import com.avirat.tech.smt.entity.StudentRegistrationEntity;
+import com.avirat.tech.smt.exception.globalexception.DataNotFoundException;
 import com.avirat.tech.smt.mapper.StudentRegistrationMapper;
+import com.avirat.tech.smt.repo.CourseCatalogRepo;
+import com.avirat.tech.smt.repo.FeesRepo;
 import com.avirat.tech.smt.repo.RegistrationIdRecordRepo;
 import com.avirat.tech.smt.repo.StudentRegistrationRepo;
+import com.avirat.tech.smt.service.InstallmentService;
 import com.avirat.tech.smt.service.StudentRegistrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,26 +35,45 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
     @Autowired
     private RegistrationIdRecordRepo registrationIdRecordRepo;
 
+    @Autowired
+    private FeesRepo feesRepo;
+
+    @Autowired
+    private CourseCatalogRepo courseCatalogRepo;
+
+    @Autowired
+    private InstallmentService installmentService;
+
     @Override
     public StudentRegistrationDataDto saveStudentRegistration(StudentRegistrationDataDto dto) {
-        log.info("Registering new student: {} {}", dto.getFirstName(), dto.getLastName());
-        StudentRegistrationEntity entity = StudentRegistrationMapper.convertToEntity(dto);
+        log.info("ENTER saveStudentRegistration() | firstName={} lastName={}",
+                dto.getFirstName(), dto.getLastName());
+        StudentRegistrationEntity studentRegistrationEntity = StudentRegistrationMapper.convertToEntity(dto);
         String regId = getIncrementedRegId();
-        entity.setRegId(regId);
-        StudentRegistrationEntity saved = studentRegistrationRepo.save(entity);
+        studentRegistrationEntity.setRegId(regId);
+        CourseCatalogEntity courseCatalogEntity = courseCatalogRepo.findById(studentRegistrationEntity.getCourse()).orElseThrow(() -> new DataNotFoundException());
+        FeesEntity feesEntity = FeesEntity.builder()
+                .totalFees(courseCatalogEntity.getTotalFees())
+                .pending(courseCatalogEntity.getTotalFees())
+                .paidFees(0L)
+                .feesStatus(FeesStatusConstant.PENDING.toString()).build();
+        studentRegistrationEntity.setFeesEntity(feesEntity);
+        StudentRegistrationEntity saved = studentRegistrationRepo.save(studentRegistrationEntity);
         updateRegId(regId);
-        log.info("Student registered successfully with ID: {}", regId);
+        installmentService.installmentGenerator(saved.getFeesEntity(),courseCatalogEntity);
+        log.info("EXIT saveStudentRegistration() | regId={}", regId);
         return StudentRegistrationMapper.convertToDto(saved);
     }
 
     @Override
     public StudentRegistrationDataDto getStudentRegistration(String regId) {
-        log.info("Fetching student by ID: {}", regId);
+        log.info("ENTER getStudentRegistration() | regId={}", regId);
         StudentRegistrationEntity entity = studentRegistrationRepo.findById(regId)
                 .orElseThrow(() -> {
                     log.warn("Student not found with ID: {}", regId);
-                    return new RuntimeException("Student not found with ID: " + regId);
+                    return new DataNotFoundException("Student not found with ID: " + regId);
                 });
+        log.info("EXIT getStudentRegistration() | regId={}", entity.getRegId());
         return StudentRegistrationMapper.convertToDto(entity);
     }
 
@@ -56,14 +82,17 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
             String regId, String firstName, String lastName,
             String course, String standard, String email,
             String adhar, int pageNumber, int pageSize) {
+        log.info("ENTER searchStudent() | regId={} firstName={} course={} pageNumber={} pageSize={}",
+                regId, firstName, course, pageNumber, pageSize);
 
         // Auto-prefix "Reg-" if user typed just a number
         regId = emptyToNull(regId);
         if (regId != null && !regId.toLowerCase().startsWith("reg-")) {
             regId = "Reg-" + regId;
         }
-
-        log.info("Searching students — regId={}, firstName={}, course={}, page={}", regId, firstName, course, pageNumber);
+        if (pageNumber < 0 || pageSize <= 0) {
+            throw new IllegalArgumentException("Invalid pagination values");
+        }
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, "firstName"));
         Page<StudentRegistrationEntity> page = studentRegistrationRepo.searchStudents(
@@ -76,13 +105,13 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
                 emptyToNull(adhar),
                 pageRequest);
 
-        log.info("Search returned {} results (page {} of {})", page.getTotalElements(), pageNumber, page.getTotalPages());
+        log.info("EXIT searchStudent() | totalRecords={}", page.getTotalElements());
         return page.map(StudentRegistrationMapper::convertToDto);
     }
 
     @Override
     public List<StudentRegistrationDataDto> getAllStudents() {
-        log.info("Fetching all students");
+        log.info("Fetching all students in getAllStudents()");
         return studentRegistrationRepo.findAll()
                 .stream()
                 .map(StudentRegistrationMapper::convertToDto)
@@ -91,11 +120,11 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
 
     @Override
     public StudentRegistrationDataDto updateStudent(String regId, StudentRegistrationDataDto dto) {
-        log.info("Updating student: {}", regId);
+        log.info("ENTER updateStudent() | regId={}", regId);
         StudentRegistrationEntity entity = studentRegistrationRepo.findById(regId)
                 .orElseThrow(() -> {
                     log.warn("Update failed — student not found: {}", regId);
-                    return new RuntimeException("Student not found with ID: " + regId);
+                    return new DataNotFoundException("Student not found with ID: " + regId);
                 });
 
         // Partial update — only set fields that are not null (PATCH style)
@@ -126,29 +155,29 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
         if (dto.getAdharCardNumber() != null) entity.setAdharCardNumber(dto.getAdharCardNumber());
 
         StudentRegistrationEntity saved = studentRegistrationRepo.save(entity);
-        log.info("Student {} updated successfully", regId);
+        log.info("EXIT updateStudent() | regId={}", saved.getRegId());
         return StudentRegistrationMapper.convertToDto(saved);
     }
 
     @Override
     public void deleteStudent(String regId) {
-        log.info("Deleting student: {}", regId);
+        log.info("ENTER deleteStudent() | regId={}", regId);
         StudentRegistrationEntity entity = studentRegistrationRepo.findById(regId)
                 .orElseThrow(() -> {
                     log.warn("Delete failed — student not found: {}", regId);
-                    return new RuntimeException("Student not found with ID: " + regId);
+                    return new DataNotFoundException("Student not found with ID: " + regId);
                 });
         studentRegistrationRepo.delete(entity);
-        log.info("Student {} deleted successfully", regId);
+        log.info("EXIT deleteStudent() | deletedId={}", regId);
     }
 
     // ============ FEES OPERATIONS ============
 
-    @Override
+ /*   @Override
     public StudentRegistrationDataDto updateStudentFees(String regId, Long paidAmount) {
-        log.info("Recording fee payment for student {}: ₹{}", regId, paidAmount);
+        log.info("ENTER updateStudentFees() | regId={} amount={}", regId, paidAmount);
         StudentRegistrationEntity student = studentRegistrationRepo.findById(regId)
-                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + regId));
+                .orElseThrow(() -> new DataNotFoundException("Student not found with ID: " + regId));
 
         Long currentPaid = student.getPaidFees() != null ? student.getPaidFees() : 0L;
         Long newPaid = currentPaid + paidAmount;
@@ -164,13 +193,13 @@ public class StudentRegistrationServiceImpl implements StudentRegistrationServic
     public void resetStudentFees(String regId) {
         log.info("Resetting fees for student: {}", regId);
         StudentRegistrationEntity student = studentRegistrationRepo.findById(regId)
-                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + regId));
+                .orElseThrow(() -> new DataNotFoundException("Student not found with ID: " + regId));
         student.setPaidFees(0L);
         student.setRemainingFees(student.getTotalFees());
         studentRegistrationRepo.save(student);
         log.info("Fees reset for student {}", regId);
     }
-
+*/
     // ============ HELPERS ============
 
     private String emptyToNull(String value) {
