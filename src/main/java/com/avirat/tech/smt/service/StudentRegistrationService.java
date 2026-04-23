@@ -22,7 +22,7 @@ public interface StudentRegistrationService {
 
     public void deleteStudent(String regId);
 
-    public StudentRegistrationDataDto updateStudentFees(String regId, Long paidAmount);
+    //public StudentRegistrationDataDto updateStudentFees(String regId, Long paidAmount);
 
-    public void resetStudentFees(String regId);
+    //public void resetStudentFees(String regId);
 }
