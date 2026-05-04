@@ -1,7 +1,6 @@
 package com.avirat.tech.smt.service;
 
 import com.avirat.tech.smt.dto.CourseCatalogDto;
-import com.avirat.tech.smt.dto.StudentRegistrationDataDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,4 +18,6 @@ public interface CourseCatalogService {
     public List<String> getAllCourseName();
 
     public Page<CourseCatalogDto> searchCatalogByParam(String param, int pageNumber, int pagesize);
+
+    public void deleteCatalog(String catalogId);
 }
