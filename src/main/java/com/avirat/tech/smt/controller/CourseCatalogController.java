@@ -32,7 +32,7 @@ public class CourseCatalogController {
                 .body("Course saved with " + saved.getCatlogId() + " Course Id");
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<CourseCatalogDto>> getCourseCatalog(
             @RequestParam(name = "pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
