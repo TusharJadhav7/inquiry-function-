@@ -18,6 +18,8 @@ public class StudentRegistrationDataResponseDto {
     private String regId;
     private String studentName;
     private String course;
+    private String standard;
+    private String academicYear;
     private Long totalFees;
     private Long paidFees;
     private FeesDto feesDto;

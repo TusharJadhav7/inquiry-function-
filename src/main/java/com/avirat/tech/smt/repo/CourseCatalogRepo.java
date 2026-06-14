@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CourseCatalogRepo extends JpaRepository<CourseCatalogEntity,String> {
 
@@ -16,4 +18,5 @@ public interface CourseCatalogRepo extends JpaRepository<CourseCatalogEntity,Str
     @Query("SELECT c FROM CourseCatalogEntity c where c.catlogId=:field or c.courseName=:field")
     Page<CourseCatalogEntity> findByParam(@Param("field") String param, Pageable pageable);
 
+    Optional<CourseCatalogEntity> findByCourseName(String courseName);
 }

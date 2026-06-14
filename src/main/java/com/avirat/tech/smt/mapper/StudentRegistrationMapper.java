@@ -72,6 +72,7 @@ public class StudentRegistrationMapper {
         dto.setCourse(entity.getCourse());
         dto.setTotalFees(entity.getTotalFees());
         dto.setPaidFees(entity.getPaidFees());
+        dto.setStudentName(entity.getFirstName().concat(" ").concat(entity.getMiddleName()).concat(" ").concat(entity.getLastName()));
         dto.setFeesDto(FeesMapper.convertToDto(entity.getFeesEntity()));
         return dto;
     }
