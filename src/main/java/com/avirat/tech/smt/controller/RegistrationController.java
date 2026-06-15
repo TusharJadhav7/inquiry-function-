@@ -50,12 +50,12 @@ public class RegistrationController {
     /**
      * GET /registration/{regId} — Get student by registration ID
      */
- /*   @GetMapping("/{regId}")
+   @GetMapping("/{regId}")
     public ResponseEntity<StudentRegistrationDataDto> getStudentById(@PathVariable String regId) {
         log.info("GET /registration/{} — fetching student", regId);
         return ResponseEntity.ok(studentRegistrationService.getStudentRegistration(regId));
     }
-*/
+
     /**
      * GET /registration/search — Multi-parameter student search (paginated)
      */
