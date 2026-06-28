@@ -65,7 +65,7 @@ const filteredCourses = courses?.content?.filter(c =>
   }
 
   const handleSave = async () => {
-    if (!form.courseName || !form.duration || !form.totalFees) return
+    if (!form.courseName || !form.duration || !form.totalFees || !form.installments) return
     setSaving(true)
     try {
       if (editingCourse) {
@@ -235,11 +235,11 @@ const filteredCourses = courses?.content?.filter(c =>
           <div>
             <label className="form-label">No. of Installments</label>
             <select value={form.installments} onChange={(e) => setForm(f => ({ ...f, installments: e.target.value }))} className="form-select text-sm">
-              <option value="">Select...</option>
+              <option value="1">Select...</option>
               {[1,2,3,4].map(n => <option key={n} value={n}>{n}</option>)}
             </select>
           </div>
-          <div>
+          <div> 
             <label className="form-label">Description</label>
             <textarea value={form.description} onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
               className={`${inputClass} min-h-[80px] resize-none`} placeholder="Brief course description..." />

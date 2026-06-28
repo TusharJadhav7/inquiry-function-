@@ -183,7 +183,7 @@ const Fees = () => {
                     <motion.tr key={s.regId} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}>
                       <td><span className="font-semibold text-avirat-blue">{s.regId}</span></td>
                       <td className="font-medium">{s.studentName}</td>
-                      <td><span className="badge badge-blue">{s.course}</span></td>
+                      <td><span className="badge badge-blue">{s.courseEnroll}</span></td>
                       <td className="font-semibold">₹{tf.toLocaleString()}</td>
                       <td className={`font-semibold ${paid ? 'text-avirat-green' : ''}`}>₹{pf.toLocaleString()}</td>
                       <td className={`font-semibold ${rem > 0 ? 'text-avirat-red' : 'text-avirat-green'}`}>₹{rem.toLocaleString()}</td>
@@ -228,7 +228,7 @@ const Fees = () => {
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-3 text-sm">
                   <div className="info-row"><span className="info-label">Name:</span><span className="info-value">{installmentData?.stdFullName || selectedSummary?.studentName}</span></div>
-                  <div className="info-row"><span className="info-label">Course:</span><span className="info-value">{installmentData?.courseName || selectedSummary?.course}</span></div>
+                  <div className="info-row"><span className="info-label">Course:</span><span className="info-value">{installmentData?.courseName || selectedSummary?.courseEnroll}</span></div>
                   <div className="info-row"><span className="info-label">Standard:</span><span className="info-value">{installmentData?.standard || '—'}</span></div>
                   <div className="info-row"><span className="info-label">Ac. Year:</span><span className="info-value">{installmentData?.academicYear || selectedSummary?.academicYear || '—'}</span></div>
                 </div>

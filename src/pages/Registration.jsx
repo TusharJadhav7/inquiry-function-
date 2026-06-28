@@ -72,8 +72,8 @@ const Registration = () => {
 
   useEffect(() => {
     if (inquiryData && catalogData.length > 0) {
-      const courseName = inquiryData.courseEnroll || inquiryData.course || ''
-      const match = catalogData.find(c => c.courseName === courseName)
+      const courseName = inquiryData.courseEnroll || inquiryData.course || '';
+      const match = catalogData.find(c => c.courseName.trim ()=== courseName.trim());
 
       setFormData(prev => ({
         ...prev,
@@ -81,7 +81,7 @@ const Registration = () => {
         middleName: inquiryData.middleName || '',
         lastName: inquiryData.lastName || '',
         standard: inquiryData.standard || '',
-        courseEnroll: courseName || '',
+        courseEnroll: match ? match.catlogId : '',
         courseDuration: match?.duration || '',
         parentMobileNumber: inquiryData.parentMobNumber || '',
         totalFees: match?.totalFees != null ? String(match.totalFees) : (inquiryData.totalFees || '')
@@ -160,14 +160,14 @@ const Registration = () => {
     else if (!/^[0-9]{12}$/.test(formData.aadhaarNo.replace(/\s/g, ''))) {
       errs.aadhaarNo = 'Aadhaar must be exactly 12 digits'
     }
-    if (!formData.residentialAddress.trim()) errs.residentialAddress = 'Residential address is required'
+   // if (!formData.residentialAddress.trim()) errs.residentialAddress = 'Residential address is required'
     // Mobile: required + exactly 10 digits
-    if (!formData.mobileNumber.trim()) errs.mobileNumber = 'Student mobile is required'
-    else if (!/^[0-9]{10}$/.test(formData.mobileNumber.replace(/\s|\+91/g, ''))) {
+    if (formData.mobileNumber && 
+     !/^[0-9]{10}$/.test(formData.mobileNumber.replace(/\s|\+91/g, ''))) {
       errs.mobileNumber = 'Mobile must be exactly 10 digits'
     }
-    if (!formData.parentMobileNumber.trim()) errs.parentMobileNumber = 'Parent mobile is required'
-    else if (!/^[0-9]{10}$/.test(formData.parentMobileNumber.replace(/\s|\+91/g, ''))) {
+    if (formData.parentMobileNumber &&
+     !/^[0-9]{10}$/.test(formData.parentMobileNumber.replace(/\s|\+91/g, ''))) {
       errs.parentMobileNumber = 'Mobile must be exactly 10 digits'
     }
     if (formData.guardianMobileNumber && !/^[0-9]{10}$/.test(formData.guardianMobileNumber.replace(/\s|\+91/g, ''))) {
@@ -175,20 +175,25 @@ const Registration = () => {
     }
     // Email: required + format
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!formData.studentEmail.trim()) errs.studentEmail = 'Student email is required'
-    else if (!emailRe.test(formData.studentEmail)) {
-      errs.studentEmail = 'Invalid email format'
-    }
-    if (!formData.parentEmail.trim()) errs.parentEmail = 'Parent email is required'
-    else if (!emailRe.test(formData.parentEmail)) {
+    // if (!formData.studentEmail.trim()) errs.studentEmail = 'Student email is required'
+    // else if (!emailRe.test(formData.studentEmail)) {
+    //   errs.studentEmail = 'Invalid email format'
+    //   console.log(" test"+ emailRe.test(formData.studentEmail))
+    // }
+   
+    if (formData.studentEmail.trim() && !emailRe.test(formData.studentEmail)) {
+        errs.studentEmail = 'Invalid email format'
+     }
+     if (formData.parentEmail.trim() && !emailRe.test(formData.parentEmail)) {
       errs.parentEmail = 'Invalid email format'
-    }
-
+     }
+    console.log(errs);
     return errs
   }
 
   // ====== SAVE → BACKEND ======
   const handleSave = async () => {
+    console.log(formData);
     const errs = validate()
     setErrors(errs)
     if (Object.keys(errs).length > 0) {
@@ -389,23 +394,23 @@ const Registration = () => {
 
                 {/* Address */}
                 <div>
-                  <label className={labelClass}>Residential Address{requiredStar}</label>
+                  <label className={labelClass}>Residential Address{}</label>
                   <input ref={setRef('residentialAddress')} type="text" value={formData.residentialAddress} onChange={handleChange('residentialAddress')} onKeyDown={handleKeyDown('residentialAddress')} className={inputClass('residentialAddress')} placeholder="Full residential address" />
-                  <ErrorMsg field="residentialAddress" />
+                 
                 </div>
 
                 {/* Mobile */}
                 <div>
-                  <label className={labelClass}>Student Mobile{requiredStar}</label>
+                  <label className={labelClass}>Student Mobile{}</label>
                   <input ref={setRef('mobileNumber')} type="tel" value={formData.mobileNumber} onChange={handleChange('mobileNumber')} onKeyDown={handleKeyDown('mobileNumber')} className={inputClass('mobileNumber')} placeholder="10-digit mobile number" maxLength="10" />
-                  <ErrorMsg field="mobileNumber" />
+                  
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className={labelClass}>Student Email{requiredStar}</label>
+                  <label className={labelClass}>Student Email{}</label>
                   <input ref={setRef('studentEmail')} type="email" value={formData.studentEmail} onChange={handleChange('studentEmail')} onKeyDown={handleKeyDown('studentEmail')} className={inputClass('studentEmail')} placeholder="student@email.com" />
-                  <ErrorMsg field="studentEmail" />
+                 
                 </div>
 
                 {/* Parent Address */}
@@ -416,23 +421,23 @@ const Registration = () => {
 
                 {/* Parent Mobile */}
                 <div>
-                  <label className={labelClass}>Parent Mobile Number{requiredStar}</label>
+                  <label className={labelClass}>Parent Mobile Number{}</label>
                   <input ref={setRef('parentMobileNumber')} type="tel" value={formData.parentMobileNumber} onChange={handleChange('parentMobileNumber')} onKeyDown={handleKeyDown('parentMobileNumber')} className={inputClass('parentMobileNumber')} placeholder="10-digit mobile number" maxLength="10" />
-                  <ErrorMsg field="parentMobileNumber" />
+                 
                 </div>
 
                 {/* Guardian Mobile */}
                 <div>
                   <label className={labelClass}>Guardian Mobile Number</label>
                   <input ref={setRef('guardianMobileNumber')} type="tel" value={formData.guardianMobileNumber} onChange={handleChange('guardianMobileNumber')} onKeyDown={handleKeyDown('guardianMobileNumber')} className={inputClass('guardianMobileNumber')} placeholder="10-digit mobile number" maxLength="10" />
-                  <ErrorMsg field="guardianMobileNumber" />
+                 
                 </div>
 
                 {/* Parent Email */}
                 <div>
-                  <label className={labelClass}>Parent Email{requiredStar}</label>
+                  <label className={labelClass}>Parent Email{}</label>
                   <input ref={setRef('parentEmail')} type="email" value={formData.parentEmail} onChange={handleChange('parentEmail')} onKeyDown={handleKeyDown('parentEmail')} className={inputClass('parentEmail')} placeholder="parent@email.com" />
-                  <ErrorMsg field="parentEmail" />
+                 
                 </div>
               </div>
 

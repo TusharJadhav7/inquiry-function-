@@ -92,19 +92,19 @@ const Inquiry = () => {
   }
 
   const handleClear = () => {
-    setFormData (Object.fromEntries(Object.keys(formData).map(k => [k, ''])))
+    setFormData (Object.fromEntries(Object.keys(formData).map(k => [k,  k === 'inquiryDate' ? today : ''])))
     setErrors({})
   }
 
   // ====== VALIDATION ======
   const validate = () => {
     const errs = {}
-    if (!formData.firstName.trim())     errs.firstName = 'First name is required'
-    if (!formData.lastName.trim())      errs.lastName = 'Last name is required'
+    //if (!formData.firstName.trim())     errs.firstName = 'First name is required'
+   // if (!formData.lastName.trim())      errs.lastName = 'Last name is required'
     if (!formData.courseEnroll) errs.courseEnroll = 'Course is required'
-    if (!formData.parentMobNumber.trim()) errs.parentMobNumber = 'Parent mobile is required'
+    //if (!formData.parentMobNumber.trim()) errs.parentMobNumber = 'Parent mobile is required'
     else if (!/^[0-9]{10}$/.test(formData.parentMobNumber.replace(/\s|\+91/g, '')))
-      errs.parentMobNumber = 'Mobile must be exactly 10 digits'
+    //  errs.parentMobNumber = 'Mobile must be exactly 10 digits'
     if (!formData.inquiryDate)          errs.inquiryDate = 'Inquiry date is required'
     if (formData.totalFees && Number(formData.totalFees) < 0)
       errs.totalFees = 'Fees cannot be negative'
@@ -237,11 +237,11 @@ const Inquiry = () => {
                 {/* Name Row */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1">
-                    <label className={labelClass}>First Name {requiredStar}</label>
+                    <label className={labelClass}>First Name {}</label>
                     <input ref={setRef('firstName')} type="text" value={formData.firstName}
                       onChange={handleChange('firstName')} onKeyDown={handleKeyDown('firstName')}
                       className={inputClass('firstName')} placeholder="First name" />
-                    <ErrorMsg field="firstName" />
+                  
                   </div>
                   <div className="flex-1">
                     <label className={labelClass}>Middle Name</label>
@@ -262,7 +262,7 @@ const Inquiry = () => {
                  
                  {/* Parent Mobile Number*/ }
                 <div>
-                  <label className={labelClass}>Parent Mobile Number {requiredStar}</label>
+                  <label className={labelClass}>Parent Mobile Number </label>
                   <input ref={setRef('parentMobNumber')} type="tel" value={formData.parentMobNumber}
                     onChange={handleChange('parentMobNumber')} onKeyDown={handleKeyDown('parentMobNumber')}
                     className={inputClass('parentMobNumber')} placeholder="10-digit mobile number" maxLength="10" />
@@ -348,7 +348,7 @@ const Inquiry = () => {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh] bg-black/50 backdrop-blur-sm"
-            onClick={() => { setSuccessModal(null); navigate('/home') }}
+            onClick={() => { setSuccessModal(null); navigate('/inquiry') }}
           >
             <motion.div
               initial={{ scale: 0.7, y: -30, opacity: 0 }}
@@ -366,12 +366,12 @@ const Inquiry = () => {
                 Inquiry for <span className="font-semibold text-avirat-slate">{successModal.name}</span> has been registered successfully.
               </p>
               <motion.button
-                onClick={() => { setSuccessModal(null); navigate('/home') }}
+                onClick={() => { setSuccessModal(null); navigate('/inquiry') }}
                 className="btn-green w-full flex items-center justify-center gap-2 text-base py-3"
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               >
                 <ClipboardList size={18} />
-                Go to Home
+                Add Next Inquiry
               </motion.button>
             </motion.div>
           </motion.div>

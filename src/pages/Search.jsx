@@ -39,18 +39,9 @@ const StudentSearch = () => {
     setLoading(true)
     setError('')
     try {
-     // const data = await getAllStudents()
-      const params = {}
-      if (filters.regId.trim()) params.regId = filters.regId.trim()
-      if (filters.firstName.trim()) params.firstName = filters.firstName.trim()
-      if (filters.lastName.trim()) params.lastName = filters.lastName.trim()
-      if (filters.course.trim()) params.course = filters.course.trim()
-      if (filters.standard.trim()) params.standard = filters.standard.trim()
-      if (filters.email.trim()) params.email = filters.email.trim()
-      params.pageNumber = 0
-      params.pageSize = 100
-      const data = await searchStudents(params)
-      const students = Array.isArray(data) ? data : []
+      const data = await getAllStudents()
+    
+      const students = data?.content || (Array.isArray(data) ? data : [])
       setResults(students)
       setTotalElements(students.length)
       setTotalPages(Math.ceil(students.length / ITEMS_PER_PAGE))
@@ -83,12 +74,12 @@ const StudentSearch = () => {
     const hasFilter = Object.values(filters).some(v => v.trim() !== '')
 
     try {
-     /* if (!hasFilter) {
+      if (!hasFilter) {
         // No filters → load all
         await loadAllStudents()
         return
       }
-        */
+        
 
       // Build search params matching backend @RequestParam names
       const params = {}
@@ -275,7 +266,7 @@ const StudentSearch = () => {
                         >
                           <td><span className="font-semibold text-avirat-blue">{s.regId}</span></td>
                           <td>{s.firstName} {s.middleName ? s.middleName + ' ' : ''}{s.lastName}</td>
-                          <td className="hidden sm:table-cell"><span className="badge badge-green">{s.course}</span></td>
+                          <td className="hidden sm:table-cell"><span className="badge badge-green">{s.courseEnroll}</span></td>
                           <td className="hidden md:table-cell">{s.standard || '—'}</td>
                           <td className="hidden lg:table-cell"><span className="badge badge-orange">{s.academicYear || '—'}</span></td>
                           <td className="hidden lg:table-cell">₹{(s.totalFees || 0).toLocaleString()}</td>

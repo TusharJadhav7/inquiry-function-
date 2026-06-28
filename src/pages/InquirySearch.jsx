@@ -39,7 +39,7 @@ const InquirySearch = () => {
     setError('')
     try {
       const data = await getAllInquiry()
-      const inquiries = Array.isArray(data) ? data : []
+      const inquiries = data?.content ||( Array.isArray(data) ? data : [])
       setResults(inquiries)
       setHasSearched(true)
     } catch (err) {
@@ -163,13 +163,11 @@ const InquirySearch = () => {
               </div>
               <div>
                 <label className="form-label">Standard</label>
-                <select className="form-select text-sm" value={filters.standard}
-                  onChange={handleChange('standard')} onKeyDown={handleKeyDown}>
-                  <option value="">All</option>
-                  {['8th', '9th', '10th', '11th', '12th'].map(s => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
+                <input className={inputClass} value={filters.standard}
+                  onChange={handleChange('standard')} onKeyDown={handleKeyDown}
+                  placeholder="standard" / >
+                 
+                
               </div>
             </div>
 
@@ -258,7 +256,7 @@ const InquirySearch = () => {
                         <td><span className="font-semibold text-avirat-blue">{inq.inquiryId}</span></td>
                         <td>{inq.firstName} {inq.middleName ? inq.middleName + ' ' : ''}{inq.lastName}</td>
                         <td className="hidden sm:table-cell">
-                          <span className="badge badge-green">{inq.courseEnroll || '—'}</span>
+                          <span className="badge badge-green">{inq.course  || '—'}</span>
                         </td>
                         <td className="hidden md:table-cell">{inq.standard || '—'}</td>
                         <td className="hidden lg:table-cell">{inq.parentMobNumber || '—'}</td>
@@ -364,6 +362,7 @@ const InquirySearch = () => {
               {/* open to Registration form */}
               <motion.button
                    onClick={() => {
+                    console.log("Selected Inquiry:", selectedInquiry);
                     navigate('/registration', {
                     state: { fromInquiry: selectedInquiry }
                       })
